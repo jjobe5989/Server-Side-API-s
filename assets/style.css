@@ -1,13 +1,12 @@
 header {
-    background-color: #000120;
+    background-color: #000120
 }
-
-div.Title {
+div.title {
+    
     color: white;
     text-align: center;
 }
-
-div.Title h1 {
+div.title h1 {
     padding: 10px;
 }
 
@@ -15,7 +14,6 @@ div.Title h1 {
 main.dashboard {
     background-color: rgb(247, 247, 247);
 }
-
 div.recent-searches h2 {
     font-size: 1.2rem;
 }
@@ -30,7 +28,7 @@ div.city {
 
 div.cityName {
     background-color: white;
-    color: black;
+    color: black;   
 }
 
 div.currentWeather {
