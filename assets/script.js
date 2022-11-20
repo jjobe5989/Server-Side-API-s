@@ -1,9 +1,9 @@
 $(document).ready(function () {
 
     // OpenWeather API
-    const apiKey = '345e20f01cbef4200c515359ead00b3f';
+    const apiKey = '021ec3161ffefe368c83b60482dbe80b';
 
-    // Selectors for HTML elements to display weather information
+    // Selectors for HTML elements
     const cityEl = $('h2#city');
     const dateEl = $('h3#date');
     const weatherIconEl = $('img#weather-icon');
@@ -19,7 +19,7 @@ $(document).ready(function () {
    // Store past searched cities
    let pastCities = [];
 
-   // Helper function to sort cities from https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
+   // Helper function
    function compare(a, b) {
        // Use toUpperCase() to ignore character casing
        const cityA = a.city.toUpperCase();
@@ -34,9 +34,8 @@ $(document).ready(function () {
        return comparison;
    }
 
-   // Local storage functions for past searched cities
+   // Local storage
 
-    // Load events from local storage
     function loadCities() {
         const storedCities = JSON.parse(localStorage.getItem('pastCities'));
         if (storedCities) {
@@ -44,7 +43,7 @@ $(document).ready(function () {
         }
     }
 
-    // Store searched cities in local storage
+    // Stores searched cities
     function storeCities() {
         localStorage.setItem('pastCities', JSON.stringify(pastCities));
     }
@@ -61,7 +60,7 @@ $(document).ready(function () {
         return `https://api.openweathermap.org/data/2.5/weather?id=${id}&appid=${apiKey}`;
     }
 
-     // Function to display the last 5 searched cities
+     // Function that displays previous searched cities
      function displayCities(pastCities) {
         cityListEl.empty();
         pastCities.splice(5);
@@ -75,7 +74,7 @@ $(document).ready(function () {
         });
     }
     
-    // Function to color the UV Index based on EPA color scale: https://www.epa.gov/sunsafety/uv-index-scale-0
+    // Function to color the UV Index based on EPA color scale
     function setUVIndexColor(uvi) {
         if (uvi < 3) {
             return 'green';
@@ -88,19 +87,18 @@ $(document).ready(function () {
         } else return 'purple';
     }
 
-    // Search for weather conditions by calling the OpenWeather API
+    // Search for weather conditions
     function searchWeather(queryURL) {
 
-        // Create an AJAX call to retrieve weather data
         $.ajax({
             url: queryURL,
             method: 'GET'
         }).then(function (response) {
 
-            // Store current city in past cities
+            // Store current city
             let city = response.name;
             let id = response.id;
-            // Remove duplicate cities
+            // Removes duplicate cities
             if (pastCities[0]) {
                 pastCities = $.grep(pastCities, function (storedCity) {
                     return id !== storedCity.id;
@@ -110,7 +108,7 @@ $(document).ready(function () {
             storeCities();
             displayCities(pastCities);
             
-            // Display current weather in DOM elements
+            // Display current weather in DOM
             cityEl.text(response.name);
             let formattedDate = moment.unix(response.dt).format('L');
             dateEl.text(formattedDate);
@@ -120,7 +118,7 @@ $(document).ready(function () {
             humidityEl.text(response.main.humidity);
             windEl.text((response.wind.speed * 2.237).toFixed(1));
 
-            // Call OpenWeather API OneCall with lat and lon to get the UV index and 5 day forecast
+            // Call OpenWeather API OneCall
             let lat = response.coord.lat;
             let lon = response.coord.lon;
             let queryURLAll = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`;
@@ -134,7 +132,7 @@ $(document).ready(function () {
                 uvIndexEl.attr('style', `background-color: ${uvColor}; color: ${uvColor === "yellow" ? "black" : "white"}`);
                 let fiveDay = response.daily;
 
-                // Display 5 day forecast in DOM elements
+                // Displayforecast in DOM
                 for (let i = 0; i <= 5; i++) {
                     let currDay = fiveDay[i];
                     $(`div.day-${i} .card-title`).text(moment.unix(currDay.dt).format('L'));
@@ -155,32 +153,30 @@ $(document).ready(function () {
             let queryURL = buildURLFromId(pastCities[0].id);
             searchWeather(queryURL);
         } else {
-            // if no past searched cities, load Detroit weather data
-            let queryURL = buildURLFromInputs("Detroit");
+            // if no past searched cities, load Murfreesboro weather data
+            let queryURL = buildURLFromInputs("Murfreesboro");
             searchWeather(queryURL);
         }
     }
  
-    // Click handler for search button
+    // Click handler
     $('#search-btn').on('click', function (event) {
-        // Preventing the button from trying to submit the form
         event.preventDefault();
 
-        // Retrieving and scrubbing the city from the inputs
         let city = cityInput.val().trim();
         city = city.replace(' ', '%20');
 
-        // Clear the input fields
+        // Clears input 
         cityInput.val('');
 
-        // Build the query url with the city and searchWeather
+        // Build the query url
         if (city) {
             let queryURL = buildURLFromInputs(city);
             searchWeather(queryURL);
         }
     }); 
     
-    // Click handler for city buttons to load that city's weather
+    // Click handler for city buttons
     $(document).on("click", "button.city-btn", function (event) {
         let clickedCity = $(this).text();
         let foundCity = $.grep(pastCities, function (storedCity) {
@@ -190,13 +186,12 @@ $(document).ready(function () {
         searchWeather(queryURL);
     });
 
- // Initialization - when page loads
 
-    // load any cities in local storage into array
+    // load any cities in local storage
     loadCities();
     displayCities(pastCities);
 
-    // Display weather for last searched city
+    //weather for last searched city
     displayLastSearchedCity();
 
 });
